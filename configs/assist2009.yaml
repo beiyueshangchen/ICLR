@@ -1,0 +1,43 @@
+# GRACE on ASSISTments 2009 (skill-builder subset; question index == concept index).
+# The released files index 124 questions; the 117 that survive preprocessing are
+# compacted onto 0..116 (see docs/datasets.md).
+# Usage: python -m grace --config configs/assist2009.yaml
+#
+# The dataset is not redistributed with this repository. Point GRACE at your own
+# copy either as
+#   export GRACE_ASSIST2009_ROOT=/path/to/assist2009
+# or as
+#   export GRACE_DATA_ROOT=/path/to/datasets
+#      (with an assistment_2009_2010/ or assist2009/ sub-directory)
+
+dataset: assist2009
+# dataset_root: /path/to/assist2009
+# data_root: /path/to/datasets       (each dataset in its own sub-directory)
+
+output_dir: runs
+seed: 3407
+max_seq_len: 100
+
+epochs: 100
+lr: 1.0e-3
+batch_size: 1
+optimizer: adam
+weight_decay: 0.0
+betas: [0.9, 0.999]
+grad_clip: 0.0
+
+concept_emb_dim: 32
+item_emb_dim: 32
+rank: 4
+
+alpha: 1.0
+lambda_1: 0.6
+lambda_2: 0.4
+
+eval_every: 1
+early_stop_patience: 10
+# "val"  -> checkpoint chosen by validation AUC (default, recommended)
+# "test" -> checkpoint chosen by test AUC
+model_selection: val
+
+ablations: []

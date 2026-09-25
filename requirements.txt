@@ -1,0 +1,6 @@
+torch>=2.0
+numpy>=1.21
+pandas>=1.5
+scikit-learn>=1.1
+tqdm>=4.64
+PyYAML>=6.0

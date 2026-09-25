@@ -1,0 +1,43 @@
+# GRACE on Junyi Academy (715 questions / 715 concepts after preprocessing).
+# Usage: python -m grace --config configs/junyi.yaml
+#
+# The subset of Junyi that the example runs on ships in data/junyi/, so no path
+# needs to be configured. A copy kept elsewhere may be supplied as
+#   export GRACE_JUNYI_ROOT=/path/to/junyi
+# or as
+#   export GRACE_DATA_ROOT=/path/to/datasets   (with a junyi/ sub-directory)
+#
+# The released files index 835 concepts; the 715 that survive preprocessing are
+# compacted onto 0..714, matching Table 1 of the paper.
+
+dataset: junyi
+# dataset_root: /path/to/junyi
+# data_root: /path/to/datasets
+
+output_dir: runs
+seed: 3407
+max_seq_len: 100
+
+epochs: 100
+lr: 1.0e-3
+batch_size: 1
+optimizer: adam
+weight_decay: 0.0
+betas: [0.9, 0.999]
+grad_clip: 0.0
+
+concept_emb_dim: 32
+item_emb_dim: 32
+rank: 4
+
+alpha: 1.0
+lambda_1: 0.6
+lambda_2: 0.4
+
+eval_every: 1
+early_stop_patience: 10
+# "val"  -> checkpoint chosen by validation AUC (default, recommended)
+# "test" -> checkpoint chosen by test AUC
+model_selection: val
+
+ablations: []

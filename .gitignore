@@ -1,0 +1,29 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Run artefacts
+runs/
+*.pt
+*.pth
+*.ckpt
+wandb/
+lightning_logs/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Optional raw Junyi log: not needed for the shipped example (the released
+# train/test splits are used instead) and far too large to distribute.
+data/junyi/junyi_ProblemLog_original.csv
