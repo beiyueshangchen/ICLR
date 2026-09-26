@@ -134,9 +134,7 @@ interactions, 715 concepts / 715 items, mean trajectory length 51.5 and median 4
 * Trajectories shorter than `MIN_SEQ_LEN = 5` interactions are discarded.
 * Sequences are truncated to `--max-seq-len` (default `100`) interactions by
   keeping the **first** `max_seq_len` steps of a learner and discarding the
-  remainder. This is the configuration the reported numbers are computed from:
-  on the shipped Junyi split it retains 2,172,984 of the 4,049,359 raw
-  interactions.
+  remainder, which is the configuration the reported numbers are computed from.
 * The time gap `dt` is derived from timestamps only on the raw-log path. There it
   is the number of seconds between consecutive interactions of the same learner,
   clamped to one week and then transformed with `log1p`; the first interaction of
