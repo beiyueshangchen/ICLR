@@ -216,16 +216,7 @@ resolution, the ablation parsing, the loaders against tiny generated files, the
 documented bounds of `eta` (`[1e-6, 0.1]`), `d` (`[1e-6, 10]`) and `U` (`[-10, 10]`),
 and that every ablation variant trains and evaluates end to end.
 
-## Citation
 
-```bibtex
-@inproceedings{grace2026,
-  title     = {Learning How Students Update: Graph-Conditioned Meta-Optimization
-               of Cognitive State for Knowledge Tracing},
-  booktitle = {International Conference on Learning Representations (ICLR)},
-  year      = {2026}
-}
-```
 
 ## License
 
