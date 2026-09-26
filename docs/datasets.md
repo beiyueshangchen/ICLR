@@ -95,7 +95,9 @@ junyi/
   [[0, 1], [12, 0], [7, 1], [3, 0], [9, 1]]
   ```
 
-  `test.json` fills the *validation* slot and `bundle.test` is `None`.
+  `test.json` fills the *validation* slot and `bundle.test` is `None`. Each pair
+  carries only the exercise id and the response; no timestamp is stored, so the
+  time gap is not available on this path (see the preprocessing notes below).
 * Fallback path: if the released split is missing, trajectories are rebuilt from
   `junyi_ProblemLog_original.csv` (columns `user_id`, `exercise`, `correct`,
   `time_done`), ordered by timestamp and split 80/20 into train/valid.
@@ -123,17 +125,25 @@ junyi/
   mapping is deterministic, and the vocabulary size follows `max_seq_len` the
   same way it does in the shared preprocessing below.
 
-The shipped files reproduce the paper's Junyi row exactly: 33,843 training and
-8,311 held-out trajectories, 2,172,984 interactions, 715 concepts / 715 items,
-mean trajectory length 51.5 and median 43.
+The shipped files reproduce the paper's Junyi row exactly after the filtering and
+truncation above: 33,843 training and 8,311 held-out trajectories, 2,172,984
+interactions, 715 concepts / 715 items, mean trajectory length 51.5 and median 43.
 
 ## Preprocessing shared by all loaders
 
 * Trajectories shorter than `MIN_SEQ_LEN = 5` interactions are discarded.
-* Sequences are truncated to `--max-seq-len` (default `100`) interactions.
-* The time gap `dt` is the number of seconds between consecutive interactions of
-  the same learner, clamped to one week and then transformed with `log1p`; the
-  first interaction of a trajectory has `dt = 0`.
+* Sequences are truncated to `--max-seq-len` (default `100`) interactions by
+  keeping the **first** `max_seq_len` steps of a learner and discarding the
+  remainder. This is the configuration the reported numbers are computed from:
+  on the shipped Junyi split it retains 2,172,984 of the 4,049,359 raw
+  interactions.
+* The time gap `dt` is derived from timestamps only on the raw-log path. There it
+  is the number of seconds between consecutive interactions of the same learner,
+  clamped to one week and then transformed with `log1p`; the first interaction of
+  a trajectory has `dt = 0`. The released splits used by the example store
+  `[problem, label]` pairs without timestamps, so on that path `dt` is `0.0` at
+  every step and the model's `phi(dt)` branch reduces to a constant. The field is
+  kept in the schema so that a dataset which records timestamps activates it.
 * The concept graph and the Q-matrix are both row-normalised
   (`row / max(row_sum, 1e-8)`); self-loops are added to the concept graph before
   normalisation, so the propagation matrix is `S = rownorm(A + I)`.
@@ -142,4 +152,6 @@ mean trajectory length 51.5 and median 43.
   `num_items` and `num_concepts` reflect the vocabulary actually used rather
   than the index space of the released files. This is what turns Junyi's 835
   indices into the 715 reported in the paper.
-* Learner interactions are ordered by timestamp before being fed to the model.
+* On the raw-log path, learner interactions are ordered by timestamp before being
+  fed to the model. The released splits carry no timestamps, so their steps stay
+  in the order stored in the file, which is the order the reported numbers use.

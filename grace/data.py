@@ -152,8 +152,16 @@ def _load_jsonl_sequences(path: str, max_seq_len: int) -> List[Sequence]:
             for pair in raw_seq:
                 if not isinstance(pair, list) or len(pair) < 2:
                     continue
+                # These split files store only [problem, label] pairs, so no
+                # timestamp is available and the gap is 0.0 at every step; the
+                # phi(dt) branch then contributes a constant on this path.
+                # ``build_junyi_sequences`` reads the raw log, which does carry
+                # timestamps, and computes real gaps there.
                 seq.append({"problem_idx": int(pair[0]), "label": int(pair[1]), "dt": 0.0})
             if len(seq) >= MIN_SEQ_LEN:
+                # Head slice: the published configuration keeps the first
+                # ``max_seq_len`` interactions of a learner and drops the
+                # remainder, which is what the reported numbers are computed from.
                 sequences.append(seq[:max_seq_len])
     return sequences
 
@@ -408,9 +416,12 @@ def _load_peiyou_txt_sequences(txt_path: str, max_seq_len: int = 100) -> List[Se
             response = int(responses[j])
             if question_id < 0 or response not in (0, 1):
                 continue
+            # The challenge files carry no timestamps, so dt is 0.0 throughout.
             seq.append({"problem_idx": question_id, "label": response, "dt": 0.0})
 
         if len(seq) >= MIN_SEQ_LEN:
+            # Head slice: keep the first ``max_seq_len`` steps, as in the other
+            # loaders.
             sequences.append(seq[:max_seq_len])
 
     return sequences
