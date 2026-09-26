@@ -7,10 +7,12 @@ Official implementation of
 
 GRACE keeps the usual knowledge-tracing prediction head and replaces the *hand-designed*
 state transition with a **learned gradient step on the learner's own prediction error**.
-At every interaction the cognitive state `theta_t` is updated by a graph-conditioned,
-preconditioned meta-optimizer:
-
-GRACE updates the cognitive state through a graph-conditioned, preconditioned meta-optimization step. The gradient is computed from the learner's prediction loss, while the concept graph is used to diffuse the gradient across related concepts. A diagonal-plus-low-rank preconditioner further controls the update direction and scale.
+At every interaction the cognitive state is updated by a graph-conditioned,
+preconditioned meta-optimization step. The gradient is computed from the learner's
+prediction loss, while the concept graph is used to diffuse the gradient across
+related concepts. A diagonal-plus-low-rank preconditioner further controls the
+update direction and scale, so the state transition itself is learned end to end
+instead of being hand-designed.
 
 ## Repository layout
 
@@ -41,13 +43,18 @@ conda activate grace
 The code was developed with Python 3.9 and PyTorch 2.x on CPU/CUDA. It only uses
 `torch`, `numpy`, `pandas`, `scikit-learn`, `tqdm` and `pyyaml`.
 
+Every command below is written relative to the repository root, so run them from
+the directory that contains this README — the one holding `grace/`, `configs/` and
+`data/`. Nothing outside the repository is needed for the shipped example, and no
+absolute path appears anywhere in the code.
+
 ## Data
 
 `data/junyi/` ships a 38 MB subset of **Junyi Academy** — exactly the six files
 the loader reads — so the example runs with no configuration:
 
 ```bash
-python -m grace --config configs/junyi.yaml
+python -m grace --config ./configs/junyi.yaml
 ```
 
 | Dataset | Shipped here | Vocabulary after preprocessing |
@@ -70,29 +77,29 @@ To keep a dataset outside the repository — the shipped one included — point 
 at it with the CLI or the environment:
 
 ```bash
-export GRACE_DATA_ROOT=/data/kt                 # shared parent directory
-export GRACE_JUNYI_ROOT=/data/kt/junyi          # per-dataset override
-python -m grace --dataset junyi --dataset-root /data/kt/junyi
+export GRACE_DATA_ROOT=/path/to/datasets            # shared parent directory
+export GRACE_JUNYI_ROOT=/path/to/datasets/junyi     # per-dataset override
+python -m grace --dataset junyi --dataset-root /path/to/datasets/junyi
 ```
 
-For a dataset `D` the root is resolved as
-`--dataset-root` → `$GRACE_<D>_ROOT` → `--data-root`/`$GRACE_DATA_ROOT` →
-`<repository>/data/`, and the first existing directory wins (the middle two steps
-try candidate sub-directory names such as `junyi/`).
+For a dataset `D` the root is resolved as `--dataset-root`, then the
+`GRACE_<D>_ROOT` environment variable, then `--data-root` or `GRACE_DATA_ROOT`,
+and finally `<repository>/data/`; the first existing directory wins (the middle
+two steps try candidate sub-directory names such as `junyi/`).
 
 ## Quick start
 
 ```bash
 # paper configuration on the data shipped with the repository
-python -m grace --config configs/junyi.yaml
+python -m grace --config ./configs/junyi.yaml
 
 # everything can be overridden on the command line
-python -m grace --dataset junyi --dataset-root /data/kt/junyi \
+python -m grace --config ./configs/junyi.yaml \
     --epochs 100 --lr 1e-3 --batch-size 1 --rank 4 \
     --lambda-1 0.6 --lambda-2 0.4 --seed 3407
 
 # cumulative ablation of the paper with a single flag
-python -m grace --config configs/junyi.yaml --ablations e,d
+python -m grace --config ./configs/junyi.yaml --ablations e,d
 ```
 
 Each run writes to `<output-dir>/<dataset>/<ablation-tag>_<timestamp>/`:
@@ -107,21 +114,22 @@ Each run writes to `<output-dir>/<dataset>/<ablation-tag>_<timestamp>/`:
 
 ## Reproducing the paper
 
-Three datasets, the configuration of Appendix B
-(`d_c = d = 32`, `r = 4`, `alpha = 1`, `(lambda_1, lambda_2) = (0.6, 0.4)`,
-one learner trajectory per training unit, Adam, `lr = 1e-3`, `theta_0 = 0`):
+Three datasets, with the configuration of Appendix B: concept embedding width 32,
+item embedding width 32, preconditioner rank 4, mixing weight `alpha` = 1, loss
+weights `lambda1` = 0.6 and `lambda2` = 0.4, one learner trajectory per training
+unit, Adam with learning rate 1e-3, and the cognitive state initialised to zero.
 
 ```bash
-bash scripts/run_main_table.sh                 # Table 2  (GRACE row)
-bash scripts/run_ablation.sh                   # Table 3  (cumulative ablation)
-bash scripts/run_sensitivity.sh                # Table 4  (four one-factor sweeps)
+bash ./scripts/run_main_table.sh               # Table 2  (GRACE row)
+bash ./scripts/run_ablation.sh                 # Table 3  (cumulative ablation)
+bash ./scripts/run_sensitivity.sh              # Table 4  (four one-factor sweeps)
 ```
 
 The drivers default to all three benchmarks, so they need the two datasets that
 are not redistributed here; set `DATASETS` to run a subset:
 
 ```bash
-DATASETS="junyi" bash scripts/run_main_table.sh
+DATASETS="junyi" bash ./scripts/run_main_table.sh
 ```
 
 Reported test AUC / ACC (paper, Table 2):
@@ -140,7 +148,7 @@ only.
 ### Packaging the submission
 
 ```bash
-python scripts/make_submission_zip.py -o grace_submission.zip
+python ./scripts/make_submission_zip.py -o grace_submission.zip
 ```
 
 The archive contains the code, the tests and the shipped Junyi subset — nothing
@@ -200,7 +208,7 @@ the raw AUC/ACC behind Figure 5.
 ## Tests
 
 ```bash
-python -m pytest tests -q
+python -m pytest ./tests -q
 ```
 
 The tests are synthetic (no dataset download): they check configuration and path

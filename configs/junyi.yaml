@@ -1,7 +1,7 @@
 # GRACE on Junyi Academy (715 questions / 715 concepts after preprocessing).
-# Usage: python -m grace --config configs/junyi.yaml
+# Usage: python -m grace --config ./configs/junyi.yaml
 #
-# The subset of Junyi that the example runs on ships in data/junyi/, so no path
+# The subset of Junyi that the example runs on ships in ./data/junyi/, so no path
 # needs to be configured. A copy kept elsewhere may be supplied as
 #   export GRACE_JUNYI_ROOT=/path/to/junyi
 # or as

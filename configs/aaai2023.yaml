@@ -1,6 +1,6 @@
 # GRACE on the AAAI 2023 Global Knowledge Tracing Challenge data (TAL Education /
 # Peiyou, released publicly as XES3G5M; question level, 7453 questions, 859 concepts).
-# Usage: python -m grace --config configs/aaai2023.yaml
+# Usage: python -m grace --config ./configs/aaai2023.yaml
 #
 # This dataset is not redistributed with the code; download it from its original
 # provider and point GRACE at it through the environment, either as

@@ -5,6 +5,10 @@ Academy**. Only the subset of that dataset which is needed to run the example is
 distributed here; everything else is read from a directory you point the loader
 at.
 
+All commands below are relative to the repository root, so run them from the
+directory that contains `grace/`, `configs/` and `data/`. The shipped example
+needs nothing outside the repository.
+
 ## What is shipped
 
 `data/junyi/` holds exactly the six files the Junyi loader reads:
@@ -25,7 +29,7 @@ below, and the released splits are used instead.
 ## Running the example
 
 ```bash
-python -m grace --config configs/junyi.yaml
+python -m grace --config ./configs/junyi.yaml
 ```
 
 The run resolves the dataset, builds the vocabulary, trains the full model and
@@ -33,12 +37,12 @@ writes per-epoch metrics to a CSV under `--output-dir`. The first lines and the
 first training steps look like this:
 
 ```
-$ python -m grace --config configs/junyi.yaml --output-dir runs/example
+python -m grace --config ./configs/junyi.yaml --output-dir ./runs/example
 Dataset root: <repository>/data/junyi
 Using junyi split: train=33843 valid=8311 test=0
 num_concepts=715 num_items=715
 Model selection split: val
-Run directory: runs/example/junyi/full_20260926_020723
+Run directory: ./runs/example/junyi/full_20260926_020723
 Training:   0%|          | 1/33843 [00:04<45:09:38,  4.80s/it]
 Training:   0%|          | 2/33843 [00:06<26:06:16,  2.78s/it]
 ...
@@ -53,8 +57,8 @@ than the first steps, which include warm-up.
 To keep the dataset somewhere else and point GRACE at it:
 
 ```bash
-python -m grace --config configs/junyi.yaml --dataset-root /data/kt/junyi
-export GRACE_JUNYI_ROOT=/data/kt/junyi        # environment form of the same thing
+python -m grace --config ./configs/junyi.yaml --dataset-root /path/to/datasets/junyi
+export GRACE_JUNYI_ROOT=/path/to/datasets/junyi   # environment form of the same thing
 ```
 
 ### Root resolution order
@@ -63,9 +67,9 @@ For a dataset `D` the root directory is resolved in this order, and the first
 entry that yields an existing directory wins:
 
 1. `--dataset-root <path>`
-2. `$GRACE_<D>_ROOT` (for Junyi: `GRACE_JUNYI_ROOT`)
-3. `--data-root <path>` / `$GRACE_DATA_ROOT` — the candidate sub-directory
-   `junyi/` is tried under it
+2. the `GRACE_<D>_ROOT` environment variable (for Junyi: `GRACE_JUNYI_ROOT`)
+3. `--data-root <path>` or the `GRACE_DATA_ROOT` environment variable — the
+   candidate sub-directory `junyi/` is tried under it
 4. `<repository>/data/` — the copy shipped with the code
 
 If nothing exists, the path derived from step 3 is returned, so the loader

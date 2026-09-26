@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Reproduce the cumulative ablation of Table 3 (paper Section 5.3, Appendix C).
 #
-#   bash scripts/run_ablation.sh
-#   DATASETS="assist2009 junyi" bash scripts/run_ablation.sh
+#   bash ./scripts/run_ablation.sh
+#   DATASETS="assist2009 junyi" bash ./scripts/run_ablation.sh
 #
 # Each row removes one more component than the row above it (Table 3):
 #   1. GRACE (full)           : nothing removed
@@ -11,6 +11,9 @@
 #   4. w/o concept graph enc. : -e,d,c
 #   5. w/o concept attention  : -e,d,c,b
 set -euo pipefail
+
+# Always operate from the repository root, wherever the script is called from.
+cd "$(dirname "$0")/.."
 
 DATASETS="${DATASETS:-assist2009 junyi aaai2023}"
 # The empty string is the "nothing removed" variant; see grace/config.py.
@@ -24,8 +27,8 @@ for dataset in ${DATASETS}; do
         label="${LABELS[$i]}"
         echo "=== ablation | ${dataset} | ${label} ==="
         python -m grace \
-            --config "configs/${dataset}.yaml" \
-            --output-dir "runs/ablation/${dataset}/${label}" \
+            --config "./configs/${dataset}.yaml" \
+            --output-dir "./runs/ablation/${dataset}/${label}" \
             --model-selection test \
             --ablations "${variant}"
     done

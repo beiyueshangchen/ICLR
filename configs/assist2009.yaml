@@ -1,7 +1,7 @@
 # GRACE on ASSISTments 2009 (skill-builder subset; question index == concept index).
 # The released files index 124 questions; the 117 that survive preprocessing are
 # compacted onto 0..116 (see docs/datasets.md).
-# Usage: python -m grace --config configs/assist2009.yaml
+# Usage: python -m grace --config ./configs/assist2009.yaml
 #
 # The dataset is not redistributed with this repository. Point GRACE at your own
 # copy either as

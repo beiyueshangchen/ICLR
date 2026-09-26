@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 # Reproduce the sensitivity study of Table 4 / Figure 5 (Appendix D).
 #
-#   bash scripts/run_sensitivity.sh
-#   DATASETS="junyi" bash scripts/run_sensitivity.sh
+#   bash ./scripts/run_sensitivity.sh
+#   DATASETS="junyi" bash ./scripts/run_sensitivity.sh
 #
 # The paper sweeps the knobs in stages, each stage keeping the best value found by
 # the earlier stages (Appendix D). The exact grids are the ones listed below; the
 # best row of the final stage is the configuration of Appendix B.
 set -euo pipefail
+
+# Always operate from the repository root, wherever the script is called from.
+cd "$(dirname "$0")/.."
 
 DATASETS="${DATASETS:-assist2009 junyi aaai2023}"
 CONCEPT_WIDTHS=(32 64 128 256 512 1024)
@@ -20,8 +23,8 @@ run() {
     local tag="$1"; shift
     echo "=== sensitivity | ${dataset} | ${tag} ==="
     python -m grace \
-        --config "configs/${dataset}.yaml" \
-        --output-dir "runs/sensitivity/${dataset}/${tag}" \
+        --config "./configs/${dataset}.yaml" \
+        --output-dir "./runs/sensitivity/${dataset}/${tag}" \
         --model-selection test \
         "$@"
 }
