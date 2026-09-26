@@ -10,14 +10,7 @@ state transition with a **learned gradient step on the learner's own prediction 
 At every interaction the cognitive state `theta_t` is updated by a graph-conditioned,
 preconditioned meta-optimizer:
 
-$$\theta_{t+1} = \rho_t \odot \theta_t - \eta_t P_t \tilde g_t, \qquad
-\tilde g_t = (1-\beta_t)\, g_t + \beta_t\, G g_t, \qquad
-P_t = \mathrm{diag}(d_t) + \tfrac{1}{r} U_t U_t^{\top}$$
-
-where `g_t = dL_t/d theta_t` is obtained by differentiating the prediction loss with
-respect to the state (`create_graph=True`, so the transition itself is learned end to
-end), `G` is the row-normalised concept graph and `P_t` a diagonal-plus-low-rank
-preconditioner of rank `r`.
+GRACE updates the cognitive state through a graph-conditioned, preconditioned meta-optimization step. The gradient is computed from the learner's prediction loss, while the concept graph is used to diffuse the gradient across related concepts. A diagonal-plus-low-rank preconditioner further controls the update direction and scale.
 
 ## Repository layout
 
